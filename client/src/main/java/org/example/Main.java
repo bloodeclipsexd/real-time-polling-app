@@ -4,6 +4,9 @@ import jakarta.websocket.*;
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.client.ClientProperties;
 
+import java.net.URI;
+import java.util.Scanner;
+
 @ClientEndpoint
 public class Main {
 
@@ -33,9 +36,13 @@ public class Main {
             ClientManager clientManager = ClientManager.createClient();
             clientManager.getProperties().put(ClientProperties.REDIRECT_ENABLED, true);
 
-            clientManager.connectToServer(Main.class, java.net.URI.create("ws://localhost:8080/ws"));
+            Session session = clientManager.connectToServer(Main.class, URI.create("ws://localhost:8080/ws"));
+            Scanner scanner = new Scanner(System.in);
 
-            Thread.sleep(5000);
+            while (session.isOpen()) {
+                session.getBasicRemote().sendText(scanner.nextLine());
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
